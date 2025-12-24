@@ -19,7 +19,7 @@ services:
       - TZ=Asia/Shanghai
     volumes:
       # 1. 映射 SteamCMD 数据（方便更新）
-      - /root/docker-apps/l4d2/steamcmd:/home/steam/steamcmd
+      - /home/docker-apps/l4d2/steamcmd:/home/steam/steamcmd
       
       # 2. 核心映射：将脚本提取出来的游戏文件，挂载到容器内
-      - /root/docker-apps/l4d2/serverfiles:/home/steam/l4d2server
+      - /home/docker-apps/l4d2/serverfiles:/home/steam/l4d2server

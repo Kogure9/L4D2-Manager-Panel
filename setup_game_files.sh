@@ -3,10 +3,10 @@ set -e
 
 # ================= 配置区域 =================
 # 游戏文件将存放的宿主机路径
-# 对应 docker-compose.yml 里的 /root/docker-apps/l4d2/serverfiles
-HOST_GAME_DIR="/root/docker-apps/l4d2/serverfiles"
-HOST_STEAM_DIR="/root/docker-apps/l4d2/steamcmd"
-HOST_APP_DIR="/root/docker-apps/l4d2/app"
+# 对应 docker-compose.yml 里的 /home/docker-apps/l4d2/serverfiles
+HOST_GAME_DIR="/home/docker-apps/l4d2/serverfiles"
+HOST_STEAM_DIR="/home/docker-apps/l4d2/steamcmd"
+HOST_APP_DIR="/home/docker-apps/l4d2/app"
 
 # 镜像源 (已切换)
 SOURCE_IMAGE="left4devops/l4d2:latest"
