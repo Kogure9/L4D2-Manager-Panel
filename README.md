@@ -1,7 +1,7 @@
 # L4D2 Server Fast Deploy with Web Panel
 # 求生之路2 服务器极速部署方案 (带 Web 面板)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-AGPLv3-yellow.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
 ![Shell Script](https://img.shields.io/badge/Shell-Script-green)
 
