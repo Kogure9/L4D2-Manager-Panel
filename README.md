@@ -36,7 +36,7 @@
 #### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/Q1en/L4D2-Manager-Panel.git
+git clone [https://github.com/Q1en/L4D2-Manager-Panel.git](https://github.com/Kogure9/L4D2-Manager-Panel.git)
 cd L4D2-Manager-Panel
 
 ```
@@ -92,7 +92,7 @@ Instead of waiting for SteamCMD to download game files from scratch (which can b
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/Q1en/L4D2-Manager-Panel.git
+git clone [https://github.com/Q1en/L4D2-Manager-Panel.git](https://github.com/Kogure9/L4D2-Manager-Panel.git)
 cd L4D2-Manager-Panel
 
 ```
