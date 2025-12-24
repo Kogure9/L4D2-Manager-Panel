@@ -1,130 +1,160 @@
-# L4D2 管理面板
+# L4D2 Server Fast Deploy with Web Panel
+# 求生之路2 服务器极速部署方案 (带 Web 面板)
 
-一个现代化、响应式的 Left 4 Dead 2 服务器可视化管理面板。它通过一个简洁的 Web 界面，简化了服务器的部署、配置、实例管理和插件安装等操作，专为服主设计。
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
+![Shell Script](https://img.shields.io/badge/Shell-Script-green)
 
-仪表盘界面截图：
-<img width="2548" height="1411" alt="screenshot-1753721219912" src="https://github.com/user-attachments/assets/16df34ef-a0fb-4e76-a321-bd7abefcc4ce" />
+[中文](#中文) | [English](#english)
 
-## ✨ 功能特性
+---
 
-  - **仪表盘概览**: 实时查看服务器核心状态，包括服务器文件是否部署、插件平台是否安装、运行中的实例数量和已安装的插件总数。
-  - **一键部署**: 通过网页按钮直接调用 SteamCMD 部署或更新求生之路2服务器，并提供实时的日志输出。
-  - **实例管理**: 在网页上定义和管理多个服务器实例，可以独立启动或停止每个实例。
-  - **插件管理系统**:
-      - 自动检测可安装的插件。
-      - 提供清晰的“可安装”和“已安装”插件列表。
-      - 支持批量安装和卸载插件。
-  - **插件平台安装**: 自动检测安装包并执行 SourceMod 和 MetaMod 的安装与更新。
-  - **操作日志**: 详细记录所有面板操作，包括登录尝试、API 调用、脚本执行等。支持按类型过滤、导出和清空日志。
-  - **容器化部署**: 提供 `Dockerfile` 和 `docker-compose.yml`，实现与宿主机环境的隔离，简化部署流程。
-  - **安全认证**: 具备独立的面板登录认证机制。
 
-## 🚀 快速启动 (推荐使用 Docker)
+<a name="中文"></a>
 
-使用 Docker Compose 是最推荐的运行方式，它能自动处理所有依赖和配置。
+## 🇨🇳 中文介绍
 
-### 前置条件
+本项目提供了一套基于 Docker 的全自动化方案，用于快速部署带 **Web 管理面板** 的 **求生之路2 (L4D2) 专用服务器**。
 
-  - [Docker](https://www.docker.com/) 和 [Docker Compose](https://docs.docker.com/compose/)
-  - Git
+传统的开服方式需要通过 SteamCMD 下载游戏文件，速度慢且不稳定。本项目利用“借鸡生蛋”的策略，直接从现成的 Docker 镜像 ([left4devops](https://www.google.com/url?sa=E&source=gmail&q=https://hub.docker.com/r/left4devops/l4d2)) 中提取游戏核心数据，并挂载到本地，最后启动由 [Q1en](https://www.google.com/url?sa=E&source=gmail&q=https://github.com/Q1en/L4D2-Manager-Panel) 开发的管理面板容器。
 
-### 部署步骤
+### ✨ 核心特性
 
-1.  **克隆项目仓库**
+* **🚀 极速部署**：无需漫长等待 SteamCMD 下载，直接利用 Docker 镜像层缓存提取游戏文件。
+* **💻 可视化面板**：内置 Web 管理后台，轻松管理房间、RCON 指令和在线玩家。
+* **🛠️ 自动修复**：脚本自动修正 Linux 文件权限 (UID 1000) 并修复源镜像中失效的软链接 (addons/cfg)。
+* **📦 开箱即用**：继承了源镜像的环境，自带基础的 SourceMod 和 Metamod 支持。
 
-    ```bash
-    git clone https://github.com/Q1en/L4D2-Manager-Panel.git
-    cd L4D2-Manager-Panel
-    ```
+### 📋 前置要求
 
-2.  **创建挂载目录**
-    面板需要将服务器文件和 SteamCMD 保留在宿主机上，以防止容器重建时丢失。请在宿主机上创建这些目录。
+* Linux 操作系统 (Ubuntu/Debian/CentOS/Rocky)
+* 已安装 [Docker](https://docs.docker.com/get-docker/) 和 [Docker Compose](https://docs.docker.com/compose/install/)
+* 已安装 Git
 
-    ```bash
-    mkdir -p /home/steam/l4d2server
-    mkdir -p /home/steam/steamcmd
-    ```
+### 🛠️ 快速开始
 
-    > **注意**: 如果您使用其他路径，请务必同步修改 `docker-compose.yml` 文件中的 `volumes` 部分。
-
-3.  **配置环境变量**
-    打开 `docker-compose.yml` 文件，根据您的需求修改 `environment` 部分：
-
-      - `PANEL_USER`: 面板的登录用户名。
-      - `PANEL_PASSWORD`: 面板的登录密码。
-      - `STEAM_USER`: 用于登录 SteamCMD 的用户名（建议使用小号）。
-      - `STEAM_PASSWORD`: Steam 账户的密码。
-      - `TZ`: 设置容器的时区，例如 `Asia/Shanghai`。
-
-4.  **构建并启动容器**
-
-    ```bash
-    docker compose up --build -d
-    ```
-
-5.  **访问面板**
-    启动成功后，在浏览器中打开 `http://<你的服务器IP>:8080` 即可访问管理面板。
-
-## ⚙️ 配置指南
-
-### 1\. 服务器实例配置
-
-你可以在 `app/L4D2_Manager_API.sh` 脚本中定义多个服务器实例。
-在 `ServerInstances` 关联数组中添加或修改条目：
+#### 1. 克隆仓库
 
 ```bash
-declare -A ServerInstances=(
-    ["主服_战役"]="
-        Port=27015
-        HostName='[CN] My L4D2 Campaign Server'
-        MaxPlayers=8
-        StartMap='c1m1_hotel'
-        ExtraParams='+sv_gametypes \"coop,realism,survival\"'
-    "
-    # 在这里添加更多实例...
-)
-```
-
-### 2\. 插件和 SourceMod 配置
-
-  - **SourceMod/MetaMod 安装包**: 将 `sourcemod-*.tar.gz` 和 `mmsource-*.tar.gz` 文件放入 `app/SourceMod_Installers` 目录中。脚本会自动选择最新版本进行安装。
-  - **插件**: 将解压后的插件文件夹（例如，一个包含 `addons`、`cfg` 等子目录的文件夹）放入 `app/Available_Plugins` 目录中。面板会自动将其识别为可安装插件。
-
-## 🛠️ 技术栈
-
-  - **后端**: Flask
-  - **前端**: 原生 HTML/CSS/JavaScript, [SweetAlert2](https://sweetalert2.github.io/), [Feather Icons](https://feathericons.com/)
-  - **核心逻辑**: Bash Script (`screen` 用于会话管理)
-  - **容器化**: Docker / Docker Compose
-
-## 📁 目录结构
+git clone https://github.com/Q1en/L4D2-Manager-Panel.git
+cd L4D2-Manager-Panel
 
 ```
-.
-├── app/
-│   ├── L4D2_Manager_API.sh     # 核心功能的 Shell 脚本
-│   ├── app.py                  # Flask 应用主文件
-│   ├── logger.py               # 日志记录器
-│   ├── requirements.txt        # Python 依赖
-│   ├── Available_Plugins/      # 存放可用插件
-│   ├── Installed_Receipts/     # 插件安装回执，请勿修改
-│   ├── SourceMod_Installers/   # 存放插件平台安装包
-│   ├── logs/                   # 存放日志
-│   ├── static/
-│   │   └── style.css           # 全局样式表
-│   └── templates/
-│       ├── dashboard.html      # 仪表盘页面
-│       ├── login.html          # 登录页面
-│       ├── logs.html           # 日志页面
-│       └── plugins.html        # 插件管理页面
-├── docker-compose.yml          # Docker Compose 配置文件
-└── Dockerfile                  # Docker 镜像定义文件
+
+#### 2. 修改配置 (可选)
+
+编辑 `docker-compose.yml` 修改默认的管理员密码：
+
+```yaml
+environment:
+  - PANEL_PASSWORD=请修改为你的强密码  # <--- 建议修改此处
+
 ```
 
-## 🤝 贡献
+#### 3. 运行部署脚本
 
-欢迎提交 Pull Requests 或 Issues。
+赋予脚本执行权限并运行。该脚本会自动完成目录创建、文件提取、权限修复和服务启动。
 
-## 📄 许可证
+```bash
+chmod +x setup_game_files.sh
+./setup_game_files.sh
 
-本项目采用 [AGPLV3](https://www.gnu.org/licenses/agpl-3.0.html) 许可证。
+```
+
+#### 4. 访问面板
+
+在浏览器访问：`http://你的服务器IP:27020`
+
+* **默认账号**: `admin`
+* **默认密码**: `password123` (或者你在第二步设置的密码)
+
+---
+
+<a name="english"></a>
+## 🇬🇧 English Description
+
+This project provides an automated solution to deploy a **Left 4 Dead 2 Dedicated Server** with a **Web Management Panel** in minutes.
+
+Instead of waiting for SteamCMD to download game files from scratch (which can be slow depending on your network), this script extracts game data directly from the [left4devops](https://hub.docker.com/r/left4devops/l4d2) Docker image and mounts it to a local directory. It then launches a containerized manager panel created by [Q1en](https://github.com/Q1en/L4D2-Manager-Panel).
+
+### ✨ Key Features
+* **🚀 Lightning Fast**: Skips the lengthy SteamCMD download process by using a pre-built Docker image cache.
+* **💻 Web Management**: Integrated web panel for managing server status, RCON, and players.
+* **🛠️ Auto-Fixes**: Automatically handles Linux permission issues (UID 1000) and fixes broken symlinks (addons/cfg) from the source image.
+* **📦 Out-of-the-Box**: Comes with basic SourceMod/Metamod environment (inherited from source image).
+
+### 📋 Prerequisites
+* Linux OS (Ubuntu/Debian/CentOS/Rocky)
+* [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/)
+* Git
+
+### 🛠️ Quick Start
+
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/Q1en/L4D2-Manager-Panel.git
+cd L4D2-Manager-Panel
+
+```
+
+#### 2. Configuration (Optional)
+
+Edit `docker-compose.yml` to change the default admin password:
+
+```yaml
+environment:
+  - PANEL_PASSWORD=your_secure_password  # <--- Change this
+
+```
+
+#### 3. Run the Deployment Script
+
+This script will initialize directories, extract game files, fix permissions, and start the server.
+
+```bash
+chmod +x setup_game_files.sh
+./setup_game_files.sh
+
+```
+
+#### 4. Access the Panel
+
+Visit: `http://YOUR_SERVER_IP:27020`
+
+* **Default User**: `admin`
+* **Default Password**: `password123` (or the one you set in step 2)
+
+---
+
+## 📁 Directory Structure / 目录结构
+
+The script creates the following structure on your host machine (default path: `/root/docker-apps/l4d2/`)
+脚本默认会在宿主机的 `/root/docker-apps/l4d2/` 下创建以下目录
+
+* `serverfiles/`: **Game Core Files** (maps, addons, cfg, etc.) - *Mounted to container*
+* `serverfiles/`：**游戏核心文件**（地图、插件、配置文件等） - *挂载到容器*
+* `steamcmd/`: **SteamCMD Tool** - *For updates*
+* `steamcmd/`：**SteamCMD工具** - *用于更新*
+* `app/`: **Panel Source Code** - *Web panel logic*
+* `app/`：**面板源代码** - *网页面板逻辑*
+
+## ⚠️ FAQ / 常见问题
+
+**Q: Container keeps restarting? / 容器反复重启？**
+
+* **Check Logs**: Run `docker logs l4d2-panel`.
+* **查看日志**：运行`docker logs l4d2 - panel`。
+* **Module Error**: If you see `ModuleNotFoundError: No module named 'app'`, ensure your `docker-compose.yml` does not have an empty volume overwriting `/app`.
+* **模块错误**：如果看到“ModuleNotFoundError: No module named 'app'”，请确保您的`docker - compose.yml`文件中没有用空卷覆盖`/app`。
+* **Permission Error**: Ensure you ran the script with `root` privileges so `chown 1000:1000` works correctly.
+* **权限错误**：确保您是以`root`权限运行脚本，这样`chown 1000:1000`才能正确运行。 
+
+**Q: How to update the game? / 如何更新游戏？**
+
+* The container handles SteamCMD updates on startup, or you can use the web panel to trigger an update.
+* 容器启动时通常会检查更新，或者你可以通过 Web 面板触发更新。
+
+## 🙏 Credits / 致谢
+
+* **Manager Panel**: [Q1en/L4D2-Manager-Panel](https://www.google.com/url?sa=E&source=gmail&q=https://github.com/Q1en/L4D2-Manager-Panel)
+* **Game Docker Image**: [Left4DevOps/l4d2-docker](https://www.google.com/url?sa=E&source=gmail&q=https://hub.docker.com/r/left4devops/l4d2)
